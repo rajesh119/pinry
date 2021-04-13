@@ -105,3 +105,17 @@ def delete_pin_images(sender, instance, **kwargs):
         instance.image.delete()
     except Image.DoesNotExist:
         pass
+
+
+class Look(models.Model):    
+    insta_id = models.CharField(null=True, blank=True, max_length=512)
+    insta_post_id = models.CharField(null=True, blank=True, max_length=512)
+    description = models.TextField(blank=True, null=True)
+    image_url = models.CharField(null=True, blank=True, max_length=512)
+    published = models.DateTimeField(auto_now_add=True)
+    is_video = models.CharField(null=True, blank=True, max_length=512)
+    tags = TaggableManager()
+
+    def tag_list(self):
+        return self.tags.all()
+   

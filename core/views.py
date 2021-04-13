@@ -7,7 +7,7 @@ from rest_framework.viewsets import GenericViewSet
 from taggit.models import Tag
 
 from core import serializers as api
-from core.models import Image, Pin, Board
+from core.models import Image, Pin, Board, Look
 from core.permissions import IsOwnerOrReadOnly, OwnerOnlyIfPrivate
 from core.serializers import filter_private_pin, filter_private_board
 
@@ -32,6 +32,13 @@ class PinViewSet(viewsets.ModelViewSet):
         query = Pin.objects.all()
         request = self.request
         return filter_private_pin(request, query)
+
+class LookViewSet(viewsets.ModelViewSet):
+    serializer_class = api.LookSerializer
+    ordering_fields = ('-id', )
+    ordering = ('-id', )
+    queryset = Look.objects.all()
+   
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -79,6 +86,7 @@ class TagAutoCompleteViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 drf_router = routers.DefaultRouter()
 drf_router.register(r'pins', PinViewSet, basename="pin")
+drf_router.register(r'looks', LookViewSet, basename="look")
 drf_router.register(r'images', ImageViewSet)
 drf_router.register(r'boards', BoardViewSet, basename="board")
 drf_router.register(r'tags-auto-complete', TagAutoCompleteViewSet)

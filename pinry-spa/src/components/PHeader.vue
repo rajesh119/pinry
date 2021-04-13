@@ -4,7 +4,7 @@
       <div class="container">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
-            <img src="../assets/logo-dark.png" height="28">
+            <img src="../assets/logo.png" height="28">
           </a>
           <a role="button" class="navbar-burger burger"
              aria-label="menu" aria-expanded="false"
@@ -32,6 +32,11 @@
                   class="navbar-item">
                   Pin
                 </a>
+                 <a
+                  @click="createLook"
+                  class="navbar-item">
+                  Look
+                </a>
                 <a
                   @click="createBoard"
                   class="navbar-item">
@@ -55,6 +60,11 @@
                   :to="{ name: 'user', params: {user: user.meta.username} }"
                   class="navbar-item">
                   Pins
+                </router-link>
+                <router-link
+                  :to="{ name: 'user', params: {user: user.meta.username} }"
+                  class="navbar-item">
+                  Looks
                 </router-link>
               </div>
             </div>
@@ -155,6 +165,12 @@ export default {
     },
     createPin() {
       modals.openPinEdit(
+        this,
+        { username: this.user.meta.username },
+      );
+    },
+    createLook() {
+      modals.openLookEdit(
         this,
         { username: this.user.meta.username },
       );

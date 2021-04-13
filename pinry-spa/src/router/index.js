@@ -3,8 +3,11 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Pins4Tag from '../views/Pins4Tag.vue';
 import Pins4User from '../views/Pins4User.vue';
+import looks from '../views/looks.vue';
 import Pins4Board from '../views/Pins4Board.vue';
 import Pins4Id from '../views/Pins4Id.vue';
+import Looks4Id from '../views/Looks4Id.vue';
+import Looks4Id1 from '../views/Looks4Id1.vue';
 import Boards4User from '../views/Boards4User.vue';
 import PinCreate from '../views/PinCreate.vue';
 import Search from '../views/Search.vue';
@@ -27,6 +30,20 @@ const routes = [
     path: '/pins/users/:user',
     name: 'user',
     component: Pins4User,
+  },
+  {
+    path: '/looks',
+    component: looks,
+  },
+  {
+    path: '/looks/:pinId',
+    name: 'look',
+    component: Looks4Id,
+  },
+  {
+    path: '/looks1/:pinId',
+    name: 'look1',
+    component: Looks4Id1,
   },
   {
     path: '/pins/boards/:boardId',

@@ -6,6 +6,7 @@ from taggit.models import Tag
 
 from core.models import Image, Board
 from core.models import Pin
+from core.models import Look
 from django_images.models import Thumbnail
 from users.serializers import UserSerializer
 
@@ -82,6 +83,40 @@ class TagSerializer(serializers.SlugRelatedField):
             **{self.slug_field: data}
         )
         return obj
+
+class LookSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Look
+        fields = (
+            settings.DRF_URL_FIELD_NAME,
+            "id",
+            "insta_id",
+            "insta_post_id",
+            "image_url",
+            "description", 
+            "tags",           
+        )
+    tags = TagSerializer(
+        many=True,
+        source="tag_list",
+        required=False,
+    )
+    def create(self, validated_data):
+        tags = validated_data.pop('tag_list', [])
+        look = Look.objects.create(**validated_data)
+        if tags:
+            look.tags.set(*tags)
+        return look
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tag_list', None)
+        if tags:
+            instance.tags.set(*tags)        
+        return super(LookSerializer, self).update(instance, validated_data)
+        
+class LookIdListField(serializers.ListField):
+    child = serializers.IntegerField(
+        min_value=1
+    )
 
 
 class PinSerializer(serializers.HyperlinkedModelSerializer):

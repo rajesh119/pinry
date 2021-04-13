@@ -1,4 +1,5 @@
 import PinCreateModal from './pin_edit/PinCreateModal.vue';
+import LookCreateModal from './pin_edit/LookCreateModal.vue';
 import LoginForm from './LoginForm.vue';
 import SignUpForm from './SignUpForm.vue';
 import BoardEdit from './BoardEdit.vue';
@@ -10,6 +11,23 @@ function openPinEdit(vm, props = null, onCreated = null) {
     {
       parent: vm,
       component: PinCreateModal,
+      props,
+      hasModalCard: true,
+      events: {
+        pinCreated() {
+          if (onCreated !== null) {
+            onCreated();
+          }
+        },
+      },
+    },
+  );
+}
+function openLookEdit(vm, props = null, onCreated = null) {
+  vm.$buefy.modal.open(
+    {
+      parent: vm,
+      component: LookCreateModal,
       props,
       hasModalCard: true,
       events: {
@@ -88,6 +106,7 @@ export default {
   openBoardEdit,
   openAdd2Board,
   openPinEdit,
+  openLookEdit,
   openLogin,
   openSignUp,
 };

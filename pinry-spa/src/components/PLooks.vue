@@ -1,5 +1,6 @@
 <template>
-  <div class="pins">
+
+  <div class="pins">looks
     <section class="section">
       <div id="pins-container" class="container" v-if="blocks">
         <div
@@ -42,7 +43,7 @@
                       <img class="avatar" :src="item.avatar" alt="">
                     </div>
                     <div class="pin-info">
-                      <span class="dim">Pinned by&nbsp;
+                      <span class="dim">Curated by&nbsp;
                         <span>
                           <router-link
                             :to="{ name: 'user', params: {user: item.author} }">
@@ -78,7 +79,7 @@
 <script>
 import API from './api';
 import pinHandler from './utils/PinHandler';
-import PinPreview from './PinPreview.vue';
+import LookPreview from './LookPreview.vue';
 import loadingSpinner from './loadingSpinner.vue';
 import noMore from './noMore.vue';
 import scroll from './utils/scroll';
@@ -88,24 +89,25 @@ import niceLinks from './utils/niceLinks';
 
 function createImageItem(pin) {
   const image = {};
-  image.url = pinHandler.escapeUrl(pin.image.thumbnail.image);
-  // console.log(pin.image.thumbnail.image);
+  // image.url = pinHandler.escapeUrl(pin.image_url);
+  image.url = pin.image_url;
   image.id = pin.id;
-  image.owner_id = pin.submitter.id;
-  image.private = pin.private;
+  // image.owner_id = pin.submitter.id;
+  // image.private = pin.private;
   image.description = pin.description;
   image.tags = pin.tags;
-  image.author = pin.submitter.username;
-  image.avatar = `//gravatar.com/avatar/${pin.submitter.gravatar}`;
-  image.large_image_url = pinHandler.escapeUrl(pin.image.image);
-  image.original_image_url = pin.url;
-  image.referer = pin.referer;
-  image.orgianl_width = pin.image.width;
+  // image.author = pin.submitter.username;
+  // image.avatar = `//gravatar.com/avatar/${pin.submitter.gravatar}`;
+  image.large_image_url = pinHandler.escapeUrl(pin.image_url);
+  image.original_image_url = pin.image_url;
+  // image.referer = pin.referer;
+  // image.orgianl_width = pin.image.width;
   image.style = {
-    width: `${pin.image.thumbnail.width}px`,
-    height: `${pin.image.thumbnail.height}px`,
+    width: `${image.width}px`,
+    height: `${image.height}px`,
   };
   image.class = {};
+  console.log(image);
   return image;
 }
 
@@ -130,7 +132,7 @@ function initialData() {
 }
 
 export default {
-  name: 'pins',
+  name: 'PLooks',
   components: {
     loadingSpinner,
     noMore,
@@ -202,7 +204,7 @@ export default {
       this.$buefy.modal.open(
         {
           parent: this,
-          component: PinPreview,
+          component: LookPreview,
           props: {
             pinItem,
           },
@@ -257,9 +259,9 @@ export default {
       this.status.loading = true;
       let promise;
       if (this.pinFilters.tagFilter) {
-        promise = API.fetchPins(this.status.offset, this.pinFilters.tagFilter);
+        promise = API.fetchLooks(this.status.offset, this.pinFilters.tagFilter);
       } else if (this.pinFilters.userFilter) {
-        promise = API.fetchPins(this.status.offset, null, this.pinFilters.userFilter);
+        promise = API.fetchLooks(this.status.offset, null, this.pinFilters.userFilter);
       } else if (this.pinFilters.boardFilter) {
         promise = new Promise(
           (resolve, reject) => {
@@ -275,13 +277,14 @@ export default {
           },
         );
       } else if (this.pinFilters.idFilter) {
-        promise = API.fetchPin(this.pinFilters.idFilter);
+        promise = API.fetchLook(this.pinFilters.idFilter);
       } else {
-        promise = API.fetchPins(this.status.offset);
+        promise = API.fetchLooks(this.status.offset);
       }
       promise.then(
         (resp) => {
           const { results, next } = resp.data;
+          console.log(results);
           let newBlocks = this.buildBlocks(results);
           newBlocks.forEach(
             (item) => { this.blocksMap[item.id] = item; },

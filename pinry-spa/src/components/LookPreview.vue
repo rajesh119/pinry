@@ -1,11 +1,14 @@
 <template>
-  <div class="pin-preview-modal">
+  <div class="pin-preview-modal1">
     <section>
         <div class="card">
           <div class="card-image">
-            <figure class="image">
+            <div style="float:left;width:45%;" >
               <img :src="pinItem.original_image_url" alt="Image">
-            </figure>
+            </div>
+            <div style="float:right;width:45%;">
+                test
+            </div>
           </div>
           <div class="card-content">
             <div class="content">
@@ -63,13 +66,13 @@
 import niceLinks from './utils/niceLinks';
 
 export default {
-  name: 'PinPreview',
+  name: 'LookPreview',
   props: ['pinItem'],
   methods: {
     closeAndGoTo() {
       this.$parent.close();
       this.$router.push(
-        { name: 'pin', params: { pinId: this.pinItem.id } },
+        { name: 'look1', params: { pinId: this.pinItem.id } },
       );
     },
     niceLinks,

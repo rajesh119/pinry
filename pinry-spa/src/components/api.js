@@ -127,8 +127,45 @@ function fetchPins(offset, tagFilter, userFilter) {
   );
 }
 
+function fetchLooks(offset, tagFilter, userFilter) {
+  const url = `${API_PREFIX}looks/`;
+  const queryArgs = {
+    format: 'json',
+    ordering: '-id',
+    limit: 30,
+    offset,
+  };
+  if (tagFilter) queryArgs.tags__name = tagFilter;
+  if (userFilter) queryArgs.submitter__username = userFilter;
+  return axios.get(
+    url,
+    { params: queryArgs },
+  );
+}
+
 function fetchPin(pinId) {
   const url = `${API_PREFIX}pins/${pinId}`;
+  return new Promise(
+    (resolve, reject) => {
+      const p = axios.get(
+        url,
+      );
+      p.then(
+        (resp) => {
+          const response = {
+            data: { results: [resp.data], next: null },
+          };
+          resolve(response);
+        },
+        (error) => {
+          reject(error);
+        },
+      );
+    },
+  );
+}
+function fetchLook(pinId) {
+  const url = `${API_PREFIX}looks/${pinId}`;
   return new Promise(
     (resolve, reject) => {
       const p = axios.get(
@@ -298,6 +335,8 @@ export default {
   Board,
   fetchPin,
   fetchPins,
+  fetchLook,
+  fetchLooks,
   fetchPinsForBoard,
   fetchBoardForUser,
   User,

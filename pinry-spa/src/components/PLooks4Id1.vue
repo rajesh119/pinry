@@ -1,76 +1,61 @@
 <template>
+
   <div class="pins">
     <section class="section">
       <div id="pins-container" class="container" v-if="blocks">
-        <div
-          v-masonry=""
-          transition-duration="0.3s"
-          item-selector=".grid-item"
-          column-width=".grid-sizer"
-          gutter=".gutter-sizer"
-        >
           <template v-for="item in blocks">
-            <div v-bind:key="item.id"
-                 v-masonry-tile
-                 :class="item.class"
-                 class="grid pin-masonry">
-              <div class="grid-sizer"></div>
-              <div class="gutter-sizer"></div>
-              <div class="pin-card grid-item">
-                <div @mouseenter="showEditButtons(item.id)"
-                     @mouseleave="hideEditButtons(item.id)"
-                >
-                  <EditorUI
-                    v-show="shouldShowEdit(item.id)"
-                    :pin="item"
-                    :currentUsername="editorMeta.user.meta.username"
-                    :currentBoard="editorMeta.currentBoard"
-                    v-on:pin-delete-succeed="reset"
-                    v-on:pin-remove-from-board-succeed="reset"
-                  ></EditorUI>
-                  <img :src="item.url"
-                     @load="onPinImageLoaded(item.id)"
-                     @click="openPreview(item)"
-                     alt="item.description"
-                     :style="item.style"
-                     class="pin-preview-image">
+          <div class="card" v-bind:key="item.id">
+          <div>
+            <div style="float:left;width:45%;" >
+              <img :src="item.original_image_url" alt="Image">
+            </div>
+            <div style="float:right;width:45%;">
+                <Products></Products>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="content">
+                <p class="description title" v-html="niceLinks(item.description)"></p>
+            </div>
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <img :src="item.avatar" alt="Image">
+                </figure>
+              </div>
+              <div class="media-content">
+                <div class="is-pulled-left">
+                  <p class="title is-4 pin-meta-info"><span class="dim">Pinned by </span><span class="author">{{ item.author }}</span></p>
+                  <p class="subtitle is-6" v-show="item.tags.length > 0">
+                    <span class="subtitle dim">in&nbsp;</span>
+                    <template v-for="tag in item.tags">
+                      <b-tag v-bind:key="tag" type="is-info" class="pin-preview-tag">{{ tag }}</b-tag>
+                    </template>
+                  </p>
                 </div>
-                <div class="pin-footer">
-                  <div class="description" v-show="item.description" v-html="niceLinks(item.description)"></div>
-                  <div class="details">
-                    <div class="is-pulled-left">
-                      <img class="avatar" :src="item.avatar" alt="">
-                    </div>
-                    <div class="pin-info">
-                      <span class="dim">Pinned by&nbsp;
-                        <span>
-                          <router-link
-                            :to="{ name: 'user', params: {user: item.author} }">
-                            {{ item.author }}
-                          </router-link>
-                        </span>
-                        <template v-if="item.tags.length > 0">
-                          &nbsp;in&nbsp;
-                          <template v-for="tag in item.tags">
-                            <span v-bind:key="tag" class="pin-tag">
-                              <router-link :to="{ name: 'tag', params: {tag: tag} }"
-                                           params="{tag: tag}">{{ tag }}</router-link>
-                            </span>
-                          </template>
-                        </template>
-                        • <a :href="item.referer" target="_blank">Source</a>
-                      </span>
-                    </div>
-                    <div class="is-clearfix"></div>
-                  </div>
+                <div class="is-pulled-right">
+                  <a :href="item.referer" target="_blank">
+                    <b-button
+                        v-show="item.referer !== null"
+                        class="meta-link"
+                        type="is-warning">
+                      Source
+                    </b-button>
+                  </a>
+                  <a :href="item.original_image_url" target="_blank">
+                    <b-button
+                        v-show="item.original_image_url !== null"
+                        class="meta-link"
+                        type="is-link">
+                        Original Image
+                    </b-button>
+                  </a>
                 </div>
               </div>
             </div>
-          </template>
-        </div>
+          </div>
+        </div></template>
       </div>
-      <loadingSpinner v-bind:show="status.loading"></loadingSpinner>
-      <noMore v-bind:show="!status.hasNext"></noMore>
     </section>
   </div>
 </template>
@@ -78,34 +63,32 @@
 <script>
 import API from './api';
 import pinHandler from './utils/PinHandler';
-import PinPreview from './PinPreview.vue';
-import loadingSpinner from './loadingSpinner.vue';
-import noMore from './noMore.vue';
 import scroll from './utils/scroll';
 import bus from './utils/bus';
-import EditorUI from './editors/PinEditorUI.vue';
 import niceLinks from './utils/niceLinks';
+import Products from './Productsnew.vue';
 
 function createImageItem(pin) {
   const image = {};
-  image.url = pinHandler.escapeUrl(pin.image.thumbnail.image);
-  // console.log(pin.image.thumbnail.image);
+  // image.url = pinHandler.escapeUrl(pin.image_url);
+  image.url = pin.image_url;
   image.id = pin.id;
-  image.owner_id = pin.submitter.id;
-  image.private = pin.private;
+  // image.owner_id = pin.submitter.id;
+  // image.private = pin.private;
   image.description = pin.description;
   image.tags = pin.tags;
-  image.author = pin.submitter.username;
-  image.avatar = `//gravatar.com/avatar/${pin.submitter.gravatar}`;
-  image.large_image_url = pinHandler.escapeUrl(pin.image.image);
-  image.original_image_url = pin.url;
-  image.referer = pin.referer;
-  image.orgianl_width = pin.image.width;
+  // image.author = pin.submitter.username;
+  // image.avatar = `//gravatar.com/avatar/${pin.submitter.gravatar}`;
+  image.large_image_url = pinHandler.escapeUrl(pin.image_url);
+  image.original_image_url = pin.image_url;
+  // image.referer = pin.referer;
+  // image.orgianl_width = pin.image.width;
   image.style = {
-    width: `${pin.image.thumbnail.width}px`,
-    height: `${pin.image.thumbnail.height}px`,
+    width: `${image.width}px`,
+    height: `${image.height}px`,
   };
   image.class = {};
+  console.log(image);
   return image;
 }
 
@@ -130,14 +113,13 @@ function initialData() {
 }
 
 export default {
-  name: 'pins',
-  components: {
-    loadingSpinner,
-    noMore,
-    EditorUI,
-  },
+  name: 'PLooks4Id1',
   data() {
     return initialData();
+  },
+  components:
+  {
+    Products,
   },
   props: {
     pinFilters: {
@@ -198,19 +180,6 @@ export default {
       );
       return blocks;
     },
-    openPreview(pinItem) {
-      this.$buefy.modal.open(
-        {
-          parent: this,
-          component: PinPreview,
-          props: {
-            pinItem,
-          },
-          scroll: 'keep',
-          customClass: 'pin-preview-at-home',
-        },
-      );
-    },
     shouldFetchMore(created) {
       if (!created) {
         if (this.status.loading) {
@@ -257,9 +226,9 @@ export default {
       this.status.loading = true;
       let promise;
       if (this.pinFilters.tagFilter) {
-        promise = API.fetchPins(this.status.offset, this.pinFilters.tagFilter);
+        promise = API.fetchLooks(this.status.offset, this.pinFilters.tagFilter);
       } else if (this.pinFilters.userFilter) {
-        promise = API.fetchPins(this.status.offset, null, this.pinFilters.userFilter);
+        promise = API.fetchLooks(this.status.offset, null, this.pinFilters.userFilter);
       } else if (this.pinFilters.boardFilter) {
         promise = new Promise(
           (resolve, reject) => {
@@ -275,13 +244,14 @@ export default {
           },
         );
       } else if (this.pinFilters.idFilter) {
-        promise = API.fetchPin(this.pinFilters.idFilter);
+        promise = API.fetchLook(this.pinFilters.idFilter);
       } else {
-        promise = API.fetchPins(this.status.offset);
+        promise = API.fetchLooks(this.status.offset);
       }
       promise.then(
         (resp) => {
           const { results, next } = resp.data;
+          console.log(results);
           let newBlocks = this.buildBlocks(results);
           newBlocks.forEach(
             (item) => { this.blocksMap[item.id] = item; },
